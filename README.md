@@ -28,6 +28,8 @@ between devices on the same Wi-Fi / LAN — no cloud, no accounts, no IP hunting
 | 🍎 **macOS** | Apple Silicon (M1–M4) | `LocalBridge-osx-arm64` |
 | 🍎 **macOS** | Intel (x86_64) | `LocalBridge-osx-x64` |
 
+👉 **All binaries are available on the [Releases page](https://github.com/b4631119-oss/LocalBridge/releases/latest).**
+
 **Run / Запуск:**
 
 ```bash
