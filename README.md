@@ -21,12 +21,12 @@ between devices on the same Wi-Fi / LAN — no cloud, no accounts, no IP hunting
 
 | OS / ОС | Architecture / Архитектура | File to download / Файл для скачивания |
 |---|---|---|
-| 🐧 **Linux** | x86_64 (Intel / AMD) | `LocalBridge-linux-x64` |
-| 🐧 **Linux** | ARM64 (Raspberry Pi, ARM) | `LocalBridge-linux-arm64` |
-| 🪟 **Windows** | x86_64 (Intel / AMD) | `LocalBridge-win-x64.exe` |
-| 🪟 **Windows** | ARM64 (Snapdragon, ARM) | `LocalBridge-win-arm64.exe` |
-| 🍎 **macOS** | Apple Silicon (M1–M4) | `LocalBridge-osx-arm64` |
-| 🍎 **macOS** | Intel (x86_64) | `LocalBridge-osx-x64` |
+| 🐧 **Linux** | x86_64 (Intel / AMD) | [`LocalBridge-linux-x64`](https://github.com/b4631119-oss/LocalBridge/releases/download/v1.0.0/LocalBridge-linux-x64) |
+| 🐧 **Linux** | ARM64 (Raspberry Pi, ARM) | [`LocalBridge-linux-arm64`](https://github.com/b4631119-oss/LocalBridge/releases/download/v1.0.0/LocalBridge-linux-arm64) |
+| 🪟 **Windows** | x86_64 (Intel / AMD) | [`LocalBridge-win-x64.exe`](https://github.com/b4631119-oss/LocalBridge/releases/download/v1.0.0/LocalBridge-win-x64.exe) |
+| 🪟 **Windows** | ARM64 (Snapdragon, ARM) | [`LocalBridge-win-arm64.exe`](https://github.com/b4631119-oss/LocalBridge/releases/download/v1.0.0/LocalBridge-win-arm64.exe) |
+| 🍎 **macOS** | Apple Silicon (M1–M4) | [`LocalBridge-osx-arm64`](https://github.com/b4631119-oss/LocalBridge/releases/download/v1.0.0/LocalBridge-osx-arm64) |
+| 🍎 **macOS** | Intel (x86_64) | [`LocalBridge-osx-x64`](https://github.com/b4631119-oss/LocalBridge/releases/download/v1.0.0/LocalBridge-osx-x64) |
 
 👉 **All binaries are available on the [Releases page](https://github.com/b4631119-oss/LocalBridge/releases/latest).**
 
