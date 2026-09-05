@@ -1,0 +1,179 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:LocalBridge.ViewModels"
+             xmlns:models="using:LocalBridge.Models"
+             xmlns:local="using:LocalBridge.Converters"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+             x:Class="LocalBridge.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="#1E1E2E">
+
+    <Grid ColumnDefinitions="280, *">
+        
+        <!-- ЛЕВАЯ ПАНЕЛЬ: Список устройств (Sidebar) -->
+        <Border Grid.Column="0" Background="#181825" BorderBrush="#313244" BorderThickness="0,0,1,0" Padding="15">
+            <Grid RowDefinitions="Auto, *, Auto">
+                
+                <!-- Заголовок и статус -->
+                <StackPanel Grid.Row="0" Spacing="5" Margin="0,0,0,15">
+                    <TextBlock Text="LocalBridge" FontSize="20" FontWeight="Bold" Foreground="#CDD6F4"/>
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                        <Ellipse Width="8" Height="8" Fill="#A6E3A1"/>
+                        <TextBlock Text="Сканирование Wi-Fi..." FontSize="12" Foreground="#A6ADC8"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Список устройств в сети (динамический) -->
+                <ListBox Grid.Row="1" 
+                         ItemsSource="{Binding DiscoveredDevices}"
+                         Background="Transparent" BorderThickness="0"
+                         Padding="0" Margin="0"
+                         SelectionChanged="DeviceList_SelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate x:DataType="models:DeviceModel">
+                            <Border Background="#45475A" CornerRadius="10" Padding="12" Margin="0,0,0,8">
+                                <StackPanel Orientation="Horizontal" Spacing="12">
+                                    <TextBlock Text="{Binding Icon}" FontSize="28" VerticalAlignment="Center"/>
+                                    <StackPanel VerticalAlignment="Center" Spacing="4">
+                                        <TextBlock Text="{Binding DeviceName}" FontSize="15" FontWeight="SemiBold" Foreground="#CDD6F4"/>
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <Ellipse Width="8" Height="8" Fill="#A6E3A1" VerticalAlignment="Center"/>
+                                            <TextBlock Text="В сети" FontSize="11" FontWeight="Medium" Foreground="#A6E3A1"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Низушка сайдбара -->
+                <Button Grid.Row="2" Content="🔄 Обновить сеть" 
+                        Command="{Binding RefreshNetworkCommand}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        Background="#313244" Foreground="#CDD6F4" CornerRadius="8" Margin="0,10,0,0"/>
+            </Grid>
+        </Border>
+
+        <!-- ПРАВАЯ ПАНЕЛЬ: Зона передачи данных -->
+        <Border Grid.Column="1" Padding="25">
+            <Grid RowDefinitions="Auto, *">
+                
+                <!-- Табы переключения типов передачи -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,20">
+                    <Button CommandParameter="0" Command="{Binding SwitchTabCommand}"
+                            CornerRadius="8" Padding="15,8" FontWeight="Bold"
+                            Background="{Binding SelectedTabIndex, Converter={x:Static local:TabButtonConverter.Files}}"
+                            Foreground="{Binding SelectedTabIndex, Converter={x:Static local:TabButtonConverter.FilesFg}}"
+                            Content="📁 Файлы"/>
+                    <Button CommandParameter="1" Command="{Binding SwitchTabCommand}"
+                            CornerRadius="8" Padding="15,8"
+                            Background="{Binding SelectedTabIndex, Converter={x:Static local:TabButtonConverter.Clipboard}}"
+                            Foreground="{Binding SelectedTabIndex, Converter={x:Static local:TabButtonConverter.ClipboardFg}}"
+                            Content="📋 Буфер обмена"/>
+                    <Button CommandParameter="2" Command="{Binding SwitchTabCommand}"
+                            CornerRadius="8" Padding="15,8"
+                            Background="{Binding SelectedTabIndex, Converter={x:Static local:TabButtonConverter.Link}}"
+                            Foreground="{Binding SelectedTabIndex, Converter={x:Static local:TabButtonConverter.LinkFg}}"
+                            Content="🔗 Ссылка"/>
+                </StackPanel>
+
+                <!-- Основная область рабочей зоны -->
+                <Border Grid.Row="1" Background="#181825" CornerRadius="16" BorderBrush="#313244" BorderThickness="2" Padding="20">
+                    <Grid RowDefinitions="*">
+
+                        <!-- ═══ ТАБ 0: Файлы ═══ -->
+                        <StackPanel Grid.Row="0" IsVisible="{Binding SelectedTabIndex, Converter={x:Static local:BoolConverters.IsZero}}"
+                                    DragDrop.AllowDrop="True"
+                                    DragDrop.DragOver="OnDragOver"
+                                    DragDrop.Drop="OnFileDrop">
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="12">
+                                <TextBlock Text="📦" FontSize="48" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Перетащите файл сюда" FontSize="18" FontWeight="Bold" Foreground="#CDD6F4" HorizontalAlignment="Center"/>
+                                <TextBlock Text="или нажмите кнопку ниже для выбора" FontSize="13" Foreground="#A6ADC8" HorizontalAlignment="Center"/>
+                                <Button Content="Выбрать файл"
+                                        Command="{Binding SelectFileCommand}"
+                                        CommandParameter="{Binding $parent[TopLevel]}"
+                                        Background="#89B4FA" Foreground="#11111B" FontWeight="Bold"
+                                        CornerRadius="10" Padding="20,10" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding SelectedFileName}" FontSize="13" FontWeight="SemiBold" Foreground="#CDD6F4" HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                        </StackPanel>
+
+                        <!-- ═══ ТАБ 1: Буфер обмена ═══ -->
+                        <StackPanel Grid.Row="0" IsVisible="{Binding SelectedTabIndex, Converter={x:Static local:BoolConverters.IsOne}}"
+                                    VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="14" MaxWidth="420">
+                            <TextBlock Text="📋" FontSize="48" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Буфер обмена" FontSize="18" FontWeight="Bold" Foreground="#CDD6F4" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Отправьте текст или скопируйте вручную" FontSize="13" Foreground="#A6ADC8" HorizontalAlignment="Center"/>
+
+                            <Button Content="📋 Отправить из буфера обмена"
+                                    Command="{Binding PasteFromClipboardAndSendCommand}"
+                                    CommandParameter="{Binding $parent[TopLevel]}"
+                                    Background="#CBA6F7" Foreground="#11111B" FontWeight="Bold"
+                                    CornerRadius="10" Padding="20,10" HorizontalAlignment="Center"/>
+
+                            <TextBlock Text="— или введите вручную —" FontSize="12" Foreground="#6C7086" HorizontalAlignment="Center"/>
+
+                            <TextBox Text="{Binding TextToSend}"
+                                     PlaceholderText="Или введите текст вручную..."
+                                     AcceptsReturn="True" TextWrapping="Wrap"
+                                     MinHeight="80" MaxHeight="160"
+                                     Background="#313244" Foreground="#CDD6F4"
+                                     CornerRadius="8" Padding="10"/>
+
+                            <Button Content="🚀 Отправить текст"
+                                    Command="{Binding SendTextCommand}"
+                                    Background="#A6E3A1" Foreground="#11111B" FontWeight="Bold"
+                                    CornerRadius="10" Padding="20,10" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- ═══ ТАБ 2: Ссылка ═══ -->
+                        <StackPanel Grid.Row="0" IsVisible="{Binding SelectedTabIndex, Converter={x:Static local:BoolConverters.IsTwo}}"
+                                    VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="14" MaxWidth="420">
+                            <TextBlock Text="🔗" FontSize="48" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Отправить ссылку" FontSize="18" FontWeight="Bold" Foreground="#CDD6F4" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Ссылка автоматически откроется в браузере на устройстве получателя" FontSize="13" Foreground="#A6ADC8" HorizontalAlignment="Center" TextWrapping="Wrap"/>
+
+                            <TextBox Text="{Binding TextToSend}"
+                                     PlaceholderText="https://example.com"
+                                     FontSize="14"
+                                     Background="#313244" Foreground="#CDD6F4"
+                                     CornerRadius="8" Padding="10"/>
+
+                            <Button Content="🚀 Отправить и открыть ссылку"
+                                    Command="{Binding SendTextCommand}"
+                                    Background="#F9E2AF" Foreground="#11111B" FontWeight="Bold"
+                                    CornerRadius="10" Padding="20,10" HorizontalAlignment="Center"/>
+                        </StackPanel>
+
+                    </Grid>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ═══ Общая зона статуса / прогресса (под рабочей зоной) ═══ -->
+        <Border Grid.Column="1" Padding="25,0,25,25" VerticalAlignment="Bottom">
+            <StackPanel Spacing="8">
+                <!-- Статус и кнопка отмены -->
+                <Grid ColumnDefinitions="*, Auto">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="{Binding StatusText}" FontSize="12" Foreground="#A6ADC8" TextWrapping="Wrap"/>
+                        <TextBlock Text="{Binding ProgressValue, StringFormat='{}{0:F0}%'}" FontSize="12" Foreground="#A6ADC8"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="✕ Отмена"
+                            Command="{Binding CancelSendCommand}"
+                            IsVisible="{Binding IsSending}"
+                            Background="#F38BA8" Foreground="#11111B" FontWeight="Bold"
+                            CornerRadius="8" Padding="16,8" Margin="12,0,0,0"/>
+                </Grid>
+                <ProgressBar Value="{Binding ProgressValue}" Maximum="100" Height="8" CornerRadius="4" Foreground="#89B4FA" Background="#313244"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+
+
+</UserControl>

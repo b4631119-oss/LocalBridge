@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto">
+	<!-- ── Сеть и автопоиск устройств в локальной сети ── -->
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+	<uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+	<!-- ── Хранилище ──
+	     API 33+ : READ_MEDIA_* (запрашиваются в рантайме, если нужен доступ к медиа)
+	     API 29–32: READ_EXTERNAL_STORAGE
+	     API ≤ 28 : WRITE_EXTERNAL_STORAGE (запись в публичный /Download/LocalBridge) -->
+	<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+	<uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
+	<uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28" />
+
+	<!-- usesCleartextTraffic обязателен: LocalBridge принимает файлы по HTTP (http://<ip>:8889),
+	     а Android по умолчанию блокирует незашифрованный трафик, начиная с API 28. -->
+	<application android:label="LocalBridge"
+	             android:icon="@drawable/Icon"
+	             android:usesCleartextTraffic="true" />
+</manifest>
