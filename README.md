@@ -12,7 +12,6 @@ between devices on the same Wi-Fi / LAN — no cloud, no accounts, no IP hunting
 [![Avalonia UI](https://img.shields.io/badge/Avalonia%20UI-12.1-8B5CF6)](https://avaloniaui.net/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20macOS-lightgrey)](#-building-from-source)
-[![Mobile](https://img.shields.io/badge/Mobile-Android%20%7C%20iOS-339af0)](https://avaloniaui.net/)
 
 </div>
 
@@ -28,7 +27,6 @@ between devices on the same Wi-Fi / LAN — no cloud, no accounts, no IP hunting
 | 🪟 **Windows** | ARM64 (Snapdragon, ARM) | `LocalBridge-win-arm64.exe` |
 | 🍎 **macOS** | Apple Silicon (M1–M4) | `LocalBridge-osx-arm64` |
 | 🍎 **macOS** | Intel (x86_64) | `LocalBridge-osx-x64` |
-| 🤖 **Android** | Universal (all ABIs) | `LocalBridge.apk` |
 
 **Run / Запуск:**
 
@@ -42,10 +40,6 @@ chmod +x LocalBridge-linux-x64
 
 # macOS — double-click; if macOS blocks it: right-click → Open (same for both variants)
 ./LocalBridge-osx-arm64
-
-# Android — install the APK (allow “Install unknown apps” when prompted)
-adb install LocalBridge.apk
-# or: copy LocalBridge.apk to the phone and open it from a file manager
 ```
 
 > **Pick the right file / Как выбрать файл:** not sure about your chip? On Linux run
@@ -53,9 +47,7 @@ adb install LocalBridge.apk
 > on macOS click the Apple menu ( ) → About This Mac (M1/M2/M3/M4 = Apple Silicon).
 >
 > **How these files are produced / Как получить эти файлы:** every publish command in the
-> **Publish a release** section below produces exactly the file name from this table. The Android
-> APK comes from publishing `LocalBridge.Android` (`LocalBridge.Android-Signed.apk`, renamed to
-> `LocalBridge.apk`).
+> **Publish a release** section below produces exactly the file name from this table.
 
 ---
 
@@ -121,18 +113,14 @@ services handle networking.
 | `Services/FileTransferService.cs` | HTTP file/text transfer server & client on port **8889**, 64 KB chunk streaming |
 | `Models/DeviceModel.cs` | Discovered device (name, OS, IP:port kept internal to network logic) |
 
-```
 LocalBridge.slnx
-├── LocalBridge/            # Shared core: UI + MVVM + services (net10.0)
-│   ├── Models/
-│   ├── Services/
-│   ├── ViewModels/
-│   └── Views/
-├── LocalBridge.Desktop/    # 🖥️ Linux · Windows · macOS
-├── LocalBridge.Android/    # 📱 Android (API 23+)
-├── LocalBridge.iOS/        # 🍎 iOS (13.0+)
-└── LocalBridge.Browser/    # 🌐 WebAssembly
-```
+├── LocalBridge/ # Shared core: UI + MVVM + services (net10.0)
+│ ├── Models/
+│ ├── Services/
+│ ├── ViewModels/
+│ └── Views/
+└── LocalBridge.Desktop/ # 🖥️ Linux · Windows · macOS
+
 
 ### How it works / Как это работает
 **EN:** Every device listens on port 8889 and announces itself over UDP broadcast on port 8890.
@@ -187,18 +175,11 @@ dotnet publish LocalBridge.Desktop -c Release -r win-arm64 --self-contained -p:A
 dotnet publish LocalBridge.Desktop -c Release -r osx-arm64 --self-contained -p:AssemblyName=LocalBridge-osx-arm64
 # Intel (x86_64)
 dotnet publish LocalBridge.Desktop -c Release -r osx-x64 --self-contained -p:AssemblyName=LocalBridge-osx-x64
-
-# ── Android ──
-# Universal APK (requires the Android workload & SDK)
-dotnet publish LocalBridge.Android -c Release
-# → LocalBridge.Android-Signed.apk (rename to LocalBridge.apk)
 ```
 
-> **Note / Примечание:** iOS and WebAssembly targets are also supported (`net10.0-ios`,
-> `net10.0-browser`) but require the corresponding workloads and platform SDKs — see
-> [Avalonia documentation](https://docs.avaloniaui.net/). If you prefer a smaller binary,
-> drop `--self-contained` and install the [.NET Runtime](https://dotnet.microsoft.com/download)
-> on the target machine instead.
+> **Note / Примечание:** если позже понадобится собирать под .NET Runtime вместо self-contained,
+> уберите `--self-contained` и установите [.NET Runtime](https://dotnet.microsoft.com/download)
+> на целевой машине.
 
 ---
 

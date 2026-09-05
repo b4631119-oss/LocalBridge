@@ -1,11 +1,4 @@
-﻿<Solution>
-  <Project Path="LocalBridge.Android/LocalBridge.Android.csproj">
-    <Deploy />
-  </Project>
-  <Project Path="LocalBridge.Browser/LocalBridge.Browser.csproj" />
+<Solution>
   <Project Path="LocalBridge.Desktop/LocalBridge.Desktop.csproj" />
-  <Project Path="LocalBridge.iOS/LocalBridge.iOS.csproj">
-    <Deploy />
-  </Project>
   <Project Path="LocalBridge/LocalBridge.csproj" />
 </Solution>
