@@ -212,7 +212,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         catch
         {
             // Игнорируем любые ошибки — обновление просто не покажется
-        }
+}
     }
 
     /// <summary>
