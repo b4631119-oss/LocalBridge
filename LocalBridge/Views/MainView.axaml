@@ -59,10 +59,34 @@
 
         <!-- ПРАВАЯ ПАНЕЛЬ: Зона передачи данных -->
         <Border Grid.Column="1" Padding="25">
-            <Grid RowDefinitions="Auto, *">
+            <Grid RowDefinitions="Auto, Auto, *">
                 
+                <!-- Баннер обновления (скрыт по умолчанию) -->
+                <Border Grid.Row="0" IsVisible="{Binding ShowUpdateBanner}"
+                        Background="#89B4FA" CornerRadius="8" Padding="12" Margin="0,0,0,10">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <TextBlock Text="🔔" FontSize="16" VerticalAlignment="Center"/>
+                            <StackPanel Spacing="2">
+                                <TextBlock Text="Доступна новая версия" FontSize="13" FontWeight="Bold" Foreground="#11111B"/>
+                                <TextBlock Text="{Binding UpdateVersion, StringFormat='Версия {0} уже выпущена'}" FontSize="12" Foreground="#1E1E2E"/>
+                            </StackPanel>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <Button Content="🔗 Открыть релиз"
+                                    Command="{Binding OpenReleasePageCommand}"
+                                    Background="#11111B" Foreground="#89B4FA" FontWeight="Bold"
+                                    CornerRadius="6" Padding="12,6"/>
+                            <Button Content="✕"
+                                    Command="{Binding DismissUpdateBannerCommand}"
+                                    Background="Transparent" Foreground="#11111B" FontWeight="Bold"
+                                    CornerRadius="6" Padding="8,6" ToolTip.Tip="Скрыть"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
                 <!-- Табы переключения типов передачи -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="0,0,0,20">
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,0,0,20">
                     <Button CommandParameter="0" Command="{Binding SwitchTabCommand}"
                             CornerRadius="8" Padding="15,8" FontWeight="Bold"
                             Background="{Binding SelectedTabIndex, Converter={x:Static local:TabButtonConverter.Files}}"
@@ -81,7 +105,7 @@
                 </StackPanel>
 
                 <!-- Основная область рабочей зоны -->
-                <Border Grid.Row="1" Background="#181825" CornerRadius="16" BorderBrush="#313244" BorderThickness="2" Padding="20">
+                <Border Grid.Row="2" Background="#181825" CornerRadius="16" BorderBrush="#313244" BorderThickness="2" Padding="20">
                     <Grid RowDefinitions="*">
 
                         <!-- ═══ ТАБ 0: Файлы ═══ -->

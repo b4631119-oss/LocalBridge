@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -27,9 +28,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     private readonly NetworkDiscoveryService _discovery;
     private CancellationTokenSource? _sendCts;
 
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
     //  Observable-свойства (привязки UI)
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SendFileCommand))]
@@ -73,13 +74,56 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     /// <summary>Полный путь к выбранному файлу (не отображается, используется для отправки).</summary>
     private string? _selectedFilePath;
 
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
+    //  Update check (GitHub Releases)
+    // ═════════════════════════════════════════════════════════════════════
+
+    private readonly UpdateCheckService? _updateCheckService;
+
+    [ObservableProperty]
+    private bool _isUpdateAvailable;
+
+    [ObservableProperty]
+    private string _updateVersion = string.Empty;
+
+    [ObservableProperty]
+    private string _updateUrl = string.Empty;
+
+    [ObservableProperty]
+    private bool _showUpdateBanner;
+
+    /// <summary>Команда: открыть страницу релиза в браузере.</summary>
+    [RelayCommand]
+    private void OpenReleasePage()
+    {
+        if (!string.IsNullOrEmpty(UpdateUrl))
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = UpdateUrl,
+                    UseShellExecute = true
+                });
+            }
+            catch { /* ignore */ }
+        }
+    }
+
+    /// <summary>Команда: скрыть баннер обновления.</summary>
+    [RelayCommand]
+    private void DismissUpdateBanner() => ShowUpdateBanner = false;
+
+    // ═════════════════════════════════════════════════════════════════════
     //  Конструктор — инициализация сервиса и запуск сервера
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
 
     public MainViewModel()
     {
         _service = new FileTransferService();
+
+        // ── Update check service ──
+        _updateCheckService = new UpdateCheckService();
 
         // ── Запуск сетевого обнаружения устройств ──
         _discovery = new NetworkDiscoveryService(
@@ -94,6 +138,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         };
 
         _discovery.Start();
+
+        // ── Асинхронная проверка обновлений при старте (не блокирует UI) ──
+        _ = CheckForUpdatesAsync();
 
 #if ANDROID
         // Android: входящие файлы сохраняем в публичную папку Downloads,
@@ -140,6 +187,35 @@ public partial class MainViewModel : ViewModelBase, IDisposable
     }
 
     /// <summary>
+    /// Проверяет наличие обновлений через GitHub API.
+    /// Запускается один раз при старте, ошибки игнорируются (rate limit, нет сети и т.д.).
+    /// </summary>
+    private async Task CheckForUpdatesAsync()
+    {
+        if (_updateCheckService is null) return;
+
+        try
+        {
+            var result = await _updateCheckService.CheckForUpdateAsync().ConfigureAwait(false);
+
+            if (result.IsUpdateAvailable)
+            {
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    IsUpdateAvailable = true;
+                    UpdateVersion = result.LatestVersion;
+                    UpdateUrl = result.ReleaseUrl;
+                    ShowUpdateBanner = true;
+                });
+            }
+        }
+        catch
+        {
+            // Игнорируем любые ошибки — обновление просто не покажется
+        }
+    }
+
+    /// <summary>
     /// Дифференциальное обновление списка устройств: существующие элементы НЕ
     /// пересоздаются (ListBox сохраняет выделение), добавляются только новые,
     /// удаляются только исчезнувшие из сети.
@@ -167,9 +243,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         }
     }
 
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
     //  Команды
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
 
     /// <summary>
     /// Открыть нативный диалог выбора файла.
@@ -277,9 +353,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         _sendCts?.Cancel();
     }
 
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
     //  Отправка текста / ссылок
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
 
     /// <summary>
     /// Отправка текста или ссылки на TargetIp через /text/ эндпоинт.
@@ -377,9 +453,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         }
     }
 
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
     //  Выбор устройства
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
 
     /// <summary>
     /// Выбор устройства из списка — автоматически подставляет его IP в TargetIp.
@@ -430,9 +506,9 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         ProgressValue = 0;
     }
 
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
     //  IDisposable
-    // ════════════════════════════════════════════════════════════════════
+    // ═════════════════════════════════════════════════════════════════════
 
     public void Dispose()
     {
@@ -440,6 +516,7 @@ public partial class MainViewModel : ViewModelBase, IDisposable
         _sendCts?.Dispose();
         _discovery.Dispose();
         _service.Dispose();
+        _updateCheckService?.Dispose();
         GC.SuppressFinalize(this);
     }
 }
