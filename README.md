@@ -14,9 +14,7 @@ between devices on the same Wi-Fi / LAN — no cloud, no accounts, no IP hunting
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20macOS-lightgrey)](#-building-from-source)
 
 </div>
-
 ---
-
 ## ⬇️ Download / Скачать
 
 | OS / ОС | Architecture / Архитектура | File to download / Файл для скачивания |
