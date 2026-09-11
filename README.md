@@ -48,9 +48,7 @@ chmod +x LocalBridge-linux-x64
 >
 > **How these files are produced / Как получить эти файлы:** every publish command in the
 > **Publish a release** section below produces exactly the file name from this table.
-
 ---
-
 ## 📖 What is LocalBridge? / Что это такое?
 
 **EN:** LocalBridge is a high-performance, cross-platform P2P utility for fast file, text, and URL
